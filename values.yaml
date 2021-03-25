@@ -1,0 +1,183 @@
+global:
+  version: "v2.5.0"
+  edpName: "edp"
+  platform: "kubernetes"
+  dnsWildCard: "delivery.aws.main.edp.projects.epam.com"
+  admins:
+    - "stub_user_one@example.com"
+  developers:
+    - "stub_user_one@example.com"
+    - "stub_user_two@example.com"
+  database:
+    deploy: true
+    image: "postgres:9.6"
+    host:
+    name: "edp-db"
+    port: 5432
+    storage:
+      class: cbs
+      size: 10Gi
+    resources:
+      limits:
+        cpu: 200m
+        memory: 512Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
+  webConsole:
+    enabled: true
+    url: "https://master.delivery.aws.main.edp.projects.epam.com"
+
+edp:
+  adminGroups:
+    - "stub-group-admin"
+  developerGroups:
+    - "stub-group-developer"
+
+perf:
+  enabled: "false"
+
+vcs:
+  enabled: "false"
+
+dockerRegistry:
+  url: "093899590031.dkr.ecr.eu-central-1.amazonaws.com"
+
+tags:
+  keycloak-operator: false
+  codebase-operator: false
+  jenkins-operator: false
+  edp-component-operator: false
+  cd-pipeline-operator: false
+  nexus-operator: false
+  sonar-operator: false
+  admin-console-operator: false
+  gerrit-operator: false
+  reconciler: false
+  perf-operator: false
+
+keycloak-operator:
+  image:
+    name: epamedp/keycloak-operator
+    version: v1.5.0
+  keycloak:
+    url: "https://keycloak-keycloak.delivery.aws.main.edp.projects.epam.com"
+
+codebase-operator:
+  image:
+    name: epamedp/codebase-operator
+    version: v2.5.0
+  jira:
+    integration: true
+    name: "epam-jira"
+    apiUrl: "https://jiraeu-api.epam.com"
+    rootUrl: "https://jiraeu.epam.com"
+    credentialName: "epam-jira-user"
+
+jenkins-operator:
+  image:
+    name: epamedp/jenkins-operator
+    version: v2.5.0
+  jenkins:
+    deploy: true
+    image: epamedp/edp-jenkins
+    version: 2.6.0
+    storage:
+      class: cbs 
+      size: 10Gi
+    initImage:
+    libraryPipelinesRepo: "https://github.com/epmd-edp/edp-library-pipelines.git"
+    libraryPipelinesVersion: "release-2.7"
+    libraryStagesRepo: "https://github.com/epmd-edp/edp-library-stages.git"
+    libraryStagesVersion: "release-2.7"
+    pullSecrets:
+    basePath: ""
+
+cd-pipeline-operator:
+  image:
+    name: epamedp/cd-pipeline-operator
+    version: v2.5.0
+
+nexus-operator:
+  image:
+    name: epamedp/nexus-operator
+    version: v2.5.0
+  nexus:
+    deploy: true
+    name: "nexus"
+    image: "sonatype/nexus3"
+    version: "3.27.0"
+    basePath: ""
+    imagePullSecrets:
+    storage:
+      class: cbs 
+      size: 10Gi
+
+sonar-operator:
+  image:
+    name: epamedp/sonar-operator
+    version: v2.5.0
+  sonar:
+    deploy: true
+    name: "sonar"
+    image: "sonarqube"
+    version: "7.9-community"
+    initImage: "busybox"
+    dbImage: "postgres:9.6"
+    storage:
+      data:
+        class: cbs
+        size: 10Gi
+      database:
+        class: cbs
+        size: 10Gi
+    imagePullSecrets:
+    basePath: ""
+
+admin-console-operator:
+  image:
+    name: epamedp/admin-console-operator
+    version: v2.5.0
+  adminConsole:
+    image: epamedp/edp-admin-console
+    version: 2.6.0
+    imagePullSecrets:
+    basePath: ""
+    projectUrlMask: "/console/project/{namespace}/overview"
+    imageStreamUrlMask: "/console/project/{namespace}/browse/images/{stream}"
+
+gerrit-operator:
+  image:
+    name: epamedp/gerrit-operator
+    version: v2.5.0
+  gerrit:
+    deploy: true
+    name: "gerrit"
+    image: "openfrontier/gerrit"
+    sshPort: "22"
+    version: "3.2.3"
+    imagePullSecrets:
+    storage:
+      size: 10Gi
+      class: cbs
+
+reconciler:
+  image:
+    name: epamedp/reconciler
+    version: v2.5.0
+
+perf-operator:
+  image:
+    name: epamedp/perf-operator
+    version: v2.6.0
+  perf:
+    integration: true
+    name: "epam-perf"
+    apiUrl: "https://perf.delivery.epam.com"
+    rootUrl: "https://perf.delivery.epam.com"
+    credentialName: "epam-perf-user"
+    projectName: "EPMD-EDP"
+    luminate:
+      enabled: true
+      apiUrl: "https://api.epam.luminatesec.com"
+      credentialName: "luminate-secret"
